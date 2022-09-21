@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "base.proto";
+
+service User {
+    rpc GetAllUsers(Empty) returns (stream UserItem) {}
+    rpc GetUserById(UserID) returns (UserItem) {}
+    //rpc GetBookings() returns (){}
+}
+
+message UserItem {
+    UserID id = 1;
+    string name = 2;
+    string lastactive = 3;
+}
+
+message UserID {
+    string id = 1;
+}

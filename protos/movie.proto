@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+import "base.proto";
+
+service Movie {
+    rpc GetMovieByID(MovieID) returns (MovieData) {}
+    rpc GetListMovies(Empty) returns (stream MovieData) {}
+    rpc GetMoviesByTitle(MovieTitle) returns (stream MovieData) {}
+    rpc GetMoviesByDirector(MovieDirector) returns (stream MovieData) {}
+}
+
+message MovieID {
+    string id = 1;
+}
+
+message MovieTitle {
+    string title = 1;
+}
+
+message MovieDirector {
+    string director = 1;
+}
+
+message MovieData {
+    string title = 1;
+    float rating = 2;
+    string director = 3;
+    string id = 4;
+}
