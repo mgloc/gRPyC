@@ -5,9 +5,7 @@
 ## **File structuration :**
 
 ```
-project
-│   README.md
-│   compilation.py   <- Main script to simplify gRPC for python
+sample project
 │   requirements.txt <- Dependencies for this project developpment
 │
 └───services
@@ -22,7 +20,7 @@ project
 │   └───...
 │   │
 │   └───client  <- The client folder, NB : It is not a service, and you can't name a service 'client'
-│       │          It is for testing your services only, you can delete it if you test your service with something else        
+│       │          It is for testing your services only, you can delete it if you test your service with something else
 │       └───service1,2,...      <- pb2 for each service to be imported
 │       │   client.py           <- The client main script used to make requests to our services to test them
 │
@@ -44,3 +42,7 @@ project
 - Get in your freshly made virtual environment, then execute :
 - `python -m pip install -r requirements.txt` (install dependancies)
 - #TODO specify commands to run using the scripts
+
+Compile client and
+-cc
+--compile-client
