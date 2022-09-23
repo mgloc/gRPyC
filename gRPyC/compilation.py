@@ -32,11 +32,11 @@ def IsExist(type,path,message_on_error=""):
 
 def IsProto(service_name) :
     filename = PROTO_PATH+service_name+".proto"
-    return IsExist(type='file',path=filename,message_on_error=f"please make sure that the file '{service_name}.proto' is in the directory {PROTO_PATH}, or check the spelling of {service_name}")
+    return IsExist(type='file',path=filename,message_on_error=f"please make sure that the file '{service_name}.proto' is in the directory {PROTO_PATH}, or check the spelling of '{service_name}'")
 
 def IsService(service_name) :
     filename = SERVICES_PATH+service_name
-    return IsExist(type='dir',path=filename,message_on_error=f'please make sure that the service directory {SERVICES_PATH}{service_name} exist, or check the spelling of {service_name}')
+    return IsExist(type='dir',path=filename,message_on_error=f"please make sure that the service '{service_name}' has its directory at {SERVICES_PATH}{service_name}, or check the spelling of '{service_name}'")
 
 # CREATION
 
