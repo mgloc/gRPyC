@@ -13,6 +13,9 @@ def stopCompilation():
 def standardPathToMs(path:str):
     return path.replace("/","\\")
 
+def printSeparator():
+    print("-----------------------------------")
+
 ############################################# FILE CHECKS #############################################
 
 # EXISTANCE
@@ -29,17 +32,19 @@ def IsExist(type,path,message_on_error=""):
 
 def IsProto(service_name) :
     filename = PROTO_PATH+service_name+".proto"
-    return IsExist(type='file',path=filename,message_on_error='please make sure that the directory protos exist')
+    return IsExist(type='file',path=filename,message_on_error=f"please make sure that the file '{service_name}.proto' is in the directory {PROTO_PATH}, or check the spelling of {service_name}")
 
 def IsService(service_name) :
     filename = SERVICES_PATH+service_name
-    return IsExist(type='dir',path=filename,message_on_error=f'please make sure that the service directory {service_name} exist')
+    return IsExist(type='dir',path=filename,message_on_error=f'please make sure that the service directory {SERVICES_PATH}{service_name} exist, or check the spelling of {service_name}')
 
 # CREATION
 
 def createDirIfNotExisting(path,autoConvertToMs=True):
-    if autoConvertToMs : path = standardPathToMs(path)
-    os.system(f'if not exist "{path}" mkdir {path}')
+    if not(os.path.exists(path)):
+        print(f"creating {path} directory...")
+        if autoConvertToMs : path = standardPathToMs(path)
+        os.system(f'mkdir {path}')
 
 def copyFile(startPath,endPath,autoConvertToMs=True) :
     if autoConvertToMs : startPath,endPath = standardPathToMs(startPath),standardPathToMs(endPath)
@@ -49,6 +54,7 @@ def copyDefaultCompilation(service_name,destination_path) :
     pb2 = f"{SERVICES_PATH}{service_name}/pb2/{service_name}_pb2.py"
     pb2_grpc = f"{SERVICES_PATH}{service_name}/pb2/{service_name}_pb2_grpc.py"
 
+    print(f"Copying {service_name} pb2 generated files in client : {destination_path}")
     copyFile(pb2,destination_path)
     copyFile(pb2_grpc,destination_path)
 
@@ -90,8 +96,10 @@ def compileService(service_name:str):
     try :
         IsService(service_name)
         IsProto(service_name)
-    except :
+    except FileNotFoundError as e :
+        print(e.strerror)
         stopCompilation()
+        return False
 
     servicePB2Path = SERVICES_PATH + service_name + "/pb2/"
     
@@ -106,6 +114,8 @@ def compileService(service_name:str):
 
     for dep in dependencies :
         os.system(f'python -m grpc_tools.protoc -I={PROTO_PATH} --python_out={servicePB2Path} --grpc_python_out={servicePB2Path} {dep}.proto')
+    
+    return True
 
 def compileClient():
     """This function recompile every services and make them usable by the client"""
@@ -115,8 +125,9 @@ def compileClient():
     #Get services names
     servicesNames = listServicesNames(ignoreClient=True)
 
+    
     for service in servicesNames :
-
+        printSeparator()
         #Check if prototype exist
         try :
             IsProto(service)
@@ -133,3 +144,6 @@ def compileClient():
 
         #Copy compiled file into client sub folder
         copyDefaultCompilation(service_name=service,destination_path=clientSubServicePath)
+    
+    printSeparator()
+    print("Done.")
