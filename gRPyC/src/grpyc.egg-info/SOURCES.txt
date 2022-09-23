@@ -1,0 +1,10 @@
+LICENSE
+setup.cfg
+setup.py
+src/cli.py
+src/grpyc.egg-info/PKG-INFO
+src/grpyc.egg-info/SOURCES.txt
+src/grpyc.egg-info/dependency_links.txt
+src/grpyc.egg-info/entry_points.txt
+src/grpyc.egg-info/requires.txt
+src/grpyc.egg-info/top_level.txt
