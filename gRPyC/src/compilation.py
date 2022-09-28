@@ -47,6 +47,12 @@ def createDirIfNotExisting(path,autoConvertToMs=True):
         if autoConvertToMs : path = standardPathToMs(path)
         os.system(f'mkdir {path}')
 
+def createFileIfNotExisting(path,autoConvertToMs=True):
+    if not(os.path.exists(path)):
+        print(f"creating {path} file...")
+        if autoConvertToMs : path = standardPathToMs(path)
+        os.system(f'type nul > {path}')
+
 def copyFile(startPath,endPath,autoConvertToMs=True) :
     if autoConvertToMs : startPath,endPath = standardPathToMs(startPath),standardPathToMs(endPath)
     os.system(f'copy /y {startPath} {endPath}')
@@ -171,6 +177,18 @@ def compileClient():
     printSeparator()
     
     print("Done.")
+
+def createService(service_name) :
+    if service_name in listServicesNames(ignoreClient=False) :
+        print("This service already exist, exiting...")
+    
+    service_name = service_name.casefold()
+
+    # If service doesn't exist
+    createDirIfNotExisting(SERVICES_PATH+service_name)
+    createFileIfNotExisting(f"{SERVICES_PATH}{service_name}/{service_name}.py")
+    createFileIfNotExisting(f"{PROTO_PATH}{service_name}.proto")
+
 
 
 def runService(service_name):
