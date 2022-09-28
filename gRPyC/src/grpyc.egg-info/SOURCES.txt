@@ -2,6 +2,7 @@ LICENSE
 setup.cfg
 setup.py
 src/cli.py
+src/compilation.py
 src/grpyc.egg-info/PKG-INFO
 src/grpyc.egg-info/SOURCES.txt
 src/grpyc.egg-info/dependency_links.txt

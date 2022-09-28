@@ -1,8 +1,9 @@
 import re
 import os
 import errno
-
 import sys
+
+
 
 PROTO_PATH = "./protos/"
 SERVICES_PATH = "./services/"
@@ -51,8 +52,8 @@ def copyFile(startPath,endPath,autoConvertToMs=True) :
     os.system(f'copy /y {startPath} {endPath}')
 
 def copyDefaultCompilation(service_name,destination_path) :
-    pb2 = f"{SERVICES_PATH}{service_name}/pb2/{service_name}_pb2.py"
-    pb2_grpc = f"{SERVICES_PATH}{service_name}/pb2/{service_name}_pb2_grpc.py"
+    pb2 = f"{SERVICES_PATH}{service_name}/protos/{service_name}_pb2.py"
+    pb2_grpc = f"{SERVICES_PATH}{service_name}/protos/{service_name}_pb2_grpc.py"
 
     print(f"Copying {service_name} pb2 generated files in client : {destination_path}")
     copyFile(pb2,destination_path)
@@ -60,6 +61,13 @@ def copyDefaultCompilation(service_name,destination_path) :
 
 
 # GETTERS
+def listFiles(path) :
+    fil = []
+    obj = os.scandir(path=path)
+    for entry in obj:
+        if entry.is_file() :
+            fil.append(entry)
+    return fil
 
 def listDirectories(path):
     dirs = []
@@ -74,9 +82,13 @@ def listServicesNames(ignoreClient=True):
     if ignoreClient : dirs.remove('client')
     return dirs
 
+def listProtosNames():
+    dirs = list(map(lambda d: d.name.replace('.proto',''),listFiles(PROTO_PATH)))
+    return dirs
+
 # CHECK IMPORTS
 
-regexp = r"import \"(.*)\.proto\".*"
+regexp = r"import \"(?:protos\/)?(.*)\.proto\".*"
 
 def findImports(filename:str):
     occ = []
@@ -92,30 +104,34 @@ def findImports(filename:str):
 
 ############################################# COMPILATION #############################################
 
-def compileService(service_name:str):
+def compileProto(proto_name:str,outPath):
     try :
-        IsService(service_name)
-        IsProto(service_name)
+        IsProto(proto_name)
     except FileNotFoundError as e :
         print(e.strerror)
         stopCompilation()
         return False
 
-    servicePB2Path = SERVICES_PATH + service_name + "/pb2/"
-    
-    #Create PB2 file if not existing 
-    createDirIfNotExisting(servicePB2Path)
-
-    #Adding self to dependencies
-    dependencies = [service_name]
-
     #Adding dependencies
-    dependencies.extend(findImports(PROTO_PATH+service_name+".proto"))
+    dependencies = [proto_name]
+    dependencies.extend(findImports(PROTO_PATH+proto_name+".proto"))
 
     for dep in dependencies :
-        os.system(f'python -m grpc_tools.protoc -I={PROTO_PATH} --python_out={servicePB2Path} --grpc_python_out={servicePB2Path} {dep}.proto')
+        os.system(f'python -m grpc_tools.protoc -I=. --python_out={outPath} --grpc_python_out={outPath} protos/{dep}.proto')
     
     return True
+
+def compileService(service_name:str):
+    try :
+        IsService(service_name)
+    except FileNotFoundError as e :
+        print(e.strerror)
+        stopCompilation()
+        return False
+
+    servicePath = SERVICES_PATH + service_name
+
+    compileProto(proto_name=service_name,outPath=servicePath)
 
 def compileClient():
     """This function recompile every services and make them usable by the client"""
@@ -124,6 +140,7 @@ def compileClient():
 
     #Get services names
     servicesNames = listServicesNames(ignoreClient=True)
+    protosNames = listProtosNames()
 
     
     for service in servicesNames :
@@ -138,12 +155,24 @@ def compileClient():
         #If prototype exist recompile service
         compileService(service)
 
-        clientSubServicePath = f"{SERVICES_PATH}client/{service}/"
+        clientProtoPath = f"{SERVICES_PATH}client/"
         #Check if service dir in client exist
-        createDirIfNotExisting(clientSubServicePath)
+        createDirIfNotExisting(clientProtoPath+"protos/")
 
         #Copy compiled file into client sub folder
-        copyDefaultCompilation(service_name=service,destination_path=clientSubServicePath)
+        copyDefaultCompilation(service_name=service,destination_path=clientProtoPath+"protos/")
     
+    for protos in protosNames :
+        if protos not in servicesNames :
+            printSeparator()
+            compileProto(protos,outPath=clientProtoPath)
+            print(f"Compiling {protos}.proto in {clientProtoPath}")
+
     printSeparator()
+    
     print("Done.")
+
+
+def runService(service_name):
+    print(f"Running service {service_name}")
+    os.system(f'cd {SERVICES_PATH}{service_name} && python {service_name}.py')

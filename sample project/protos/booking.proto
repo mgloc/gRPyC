@@ -1,6 +1,6 @@
 syntax = "proto3";
-import "base.proto";
-import "user.proto";
+import "protos/base.proto";
+import "protos/user.proto";
 
 service Booking {
     rpc GetAllBookings(Empty) returns (stream BookingData) {}

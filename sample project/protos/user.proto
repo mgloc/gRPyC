@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "base.proto";
+import "protos/base.proto";
 
 service User {
     rpc GetAllUsers(Empty) returns (stream UserItem) {}
