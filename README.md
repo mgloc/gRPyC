@@ -21,7 +21,7 @@ sample project
 │   │
 │   └───client  <- The client folder, NB : It is not a service, and you can't name a service 'client'
 │       │          It is for testing your services only, you can delete it if you test your service with something else
-│       └───service1,2,...      <- pb2 for each service to be imported
+│       └───protos              <- pb2 for each service will be also generated here
 │       │   client.py           <- The client main script used to make requests to our services to test them
 │
 └───protos
@@ -36,13 +36,21 @@ sample project
 
 ## **How to start :**
 
-- Clone this repository
-- Run these commands at the root of the project
+- Create your 'protos' & 'services' directories
+- Then run these commands (at the root of the project)
 - `python -m venv venv` (create a virtual environment)
-- Get in your freshly made virtual environment, then execute :
-- `python -m pip install -r requirements.txt` (install dependancies)
-- #TODO specify commands to run using the scripts
+- Get in your freshly made virtual environment, then install grpyc :
+- `pip install grpyc` ([PYPI](https://pypi.org/project/grpyc/))
+- Now you can run `grpyc -ns myService1` to create a new service 
 
-Compile client and
--cc
---compile-client
+## Commands list
+
+|Command|Description|
+|---|---|
+|-c, --compile-client         | Will compile all protos for each service and copy them into the client|
+|-cs, --compile-service TEXT  | Will compile the given service|
+|-s, --run-service TEXT       | Will run the given service|
+|-ns, --new-service TEXT      | Will create a proto file and a dir for the service, run it with no text to create a client service|
+|--help                       | Show help |
+
+NB : These command must be executed at the root of your project, where your services and protos directories stand
