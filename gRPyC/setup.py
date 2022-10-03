@@ -10,7 +10,7 @@ def load_requirements(fname):
 #Actual setup
 setup(
     name="grpyc",
-    version='0.1.2',
+    version='0.1.3',
     description='Framework for grpcio (gRPC for python)',
     long_description="To ease compilation, project structure and tests",
     long_description_content_type='text/plain',

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: grpyc
-Version: 0.1.2
+Version: 0.1.3
 Summary: Framework for grpcio (gRPC for python)
 Home-page: https://github.com/Gloxounet/gRPyC
 Author: gloxounet

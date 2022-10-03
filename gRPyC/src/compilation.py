@@ -106,7 +106,7 @@ def findImports(filename:str):
                     name = results.groups()[0]
                     if not(name in occ) :
                         occ.append(name)
-                        occ.extend(findImports(PROTO_PATH+name+".proto"))
+                        occ.extend(findImports(name))
             return occ
     except FileNotFoundError as e :
         raise e
@@ -142,6 +142,7 @@ def compileService(service_name:str):
     servicePath = SERVICES_PATH + service_name
 
     compileProto(proto_name=service_name,outPath=servicePath)
+    print("Done.")
 
 def compileClient():
     """This function recompile every services and make them usable by the client"""
