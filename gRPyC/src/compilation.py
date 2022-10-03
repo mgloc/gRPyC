@@ -99,11 +99,14 @@ regexp = r"import \"(?:protos\/)?(.*)\.proto\".*"
 def findImports(filename:str):
     occ = []
     try :
-        with open(filename) as f:
+        with open(PROTO_PATH+filename+".proto") as f:
             for line in f:
                 results = re.search(regexp, line.strip())
                 if results :
-                    occ.append(results.groups()[0])
+                    name = results.groups()[0]
+                    if not(name in occ) :
+                        occ.append(name)
+                        occ.extend(findImports(PROTO_PATH+name+".proto"))
             return occ
     except FileNotFoundError as e :
         raise e
@@ -120,7 +123,8 @@ def compileProto(proto_name:str,outPath):
 
     #Adding dependencies
     dependencies = [proto_name]
-    dependencies.extend(findImports(PROTO_PATH+proto_name+".proto"))
+    dependencies.extend(findImports(proto_name))
+
 
     for dep in dependencies :
         os.system(f'python -m grpc_tools.protoc -I=. --python_out={outPath} --grpc_python_out={outPath} protos/{dep}.proto')
