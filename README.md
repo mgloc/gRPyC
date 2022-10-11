@@ -1,7 +1,8 @@
 # gRPyC : A lightweight framework to ease developpment of multiple-services using gRPC with python
 
 (Support windows only for now)
-TODO : Circular dependencies check, and add dependencies of dependencies
+
+[pypi](https://pypi.org/project/grpyc/) <- Python package
 
 ## **File structuration :**
 
